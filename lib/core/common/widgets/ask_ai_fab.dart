@@ -10,7 +10,7 @@ class AskAiFab extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return FloatingActionButton.extended(
-      heroTag: 'askAiFab',
+      heroTag: null,
       onPressed: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const AiChatPage()),

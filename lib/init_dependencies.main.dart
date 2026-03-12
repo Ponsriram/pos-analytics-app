@@ -8,17 +8,16 @@ Future<void> initDependencies() async {
   // HTTP Client
   serviceLocator.registerLazySingleton<http.Client>(() => http.Client());
 
-  // SharedPreferences
-  final sharedPreferences = await SharedPreferences.getInstance();
-  serviceLocator
-      .registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+  // Database
+  final database = AppDatabase();
+  serviceLocator.registerLazySingleton<AppDatabase>(() => database);
 
   // API Client
   serviceLocator.registerLazySingleton<ApiClient>(
     () => ApiClient(
       baseUrl: dotenv.env['API_BASE_URL'] ?? 'http://localhost:8000',
       httpClient: serviceLocator<http.Client>(),
-      sharedPreferences: serviceLocator<SharedPreferences>(),
+      database: serviceLocator<AppDatabase>(),
     ),
   );
 
