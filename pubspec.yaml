@@ -1,0 +1,66 @@
+name: pos_analytics_app
+description: "POS Analytics Dashboard - Restaurant management analytics app"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: ^1.0.8
+  iconsax_flutter: ^1.0.1
+  fl_chart: ^0.70.2
+
+  # State Management
+  flutter_riverpod: ^3.0.0
+  riverpod_annotation: ^3.0.0
+
+  # Models & Serialization
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+
+  # Networking
+  http: ^1.5.0
+
+  # Error Handling
+  fpdart: ^1.1.1
+
+  # Dependency Injection
+  get_it: ^8.0.3
+
+  # Local Storage
+  shared_preferences: ^2.5.4
+
+  # Utilities
+  intl: ^0.20.0
+  flutter_dotenv: ^6.0.0
+  internet_connection_checker_plus: ^2.9.0
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  riverpod_generator: ^3.0.0
+  build_runner: ^2.5.4
+  json_serializable: ^6.11.1
+  freezed: ^3.2.3
+  riverpod_lint: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package

@@ -1,0 +1,80 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+**/.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# Environment files (contain secrets — never commit these)
+.env
+.env.*
+!.env.example
+*.env
+
+# Flutter project metadata (machine-specific)
+.metadata
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code — uncomment if you don't want to share launch/task configs
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Auto-generated plugin registration files
+**/generated_plugin_registrant.cc
+**/generated_plugin_registrant.h
+**/generated_plugin_registrant.m
+**/GeneratedPluginRegistrant.swift
+**/GeneratedPluginRegistrant.h
+**/generated_plugins.cmake
+
+# Xcode auto-generated configs
+macos/Flutter/Flutter-Debug.xcconfig
+macos/Flutter/Flutter-Release.xcconfig
+ios/Flutter/Debug.xcconfig
+ios/Flutter/Release.xcconfig
+*.xcuserstate
+xcuserdata/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Android local machine config (contains local SDK paths)
+android/local.properties
+local.properties
+
+# Signing keys — never commit these
+*.jks
+*.keystore
+key.properties
+android/key.properties

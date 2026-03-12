@@ -1,0 +1,64 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'current_user_provider.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(CurrentUserNotifier)
+const currentUserProvider = CurrentUserNotifierProvider._();
+
+final class CurrentUserNotifierProvider
+    extends $NotifierProvider<CurrentUserNotifier, User?> {
+  const CurrentUserNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentUserProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentUserNotifierHash();
+
+  @$internal
+  @override
+  CurrentUserNotifier create() => CurrentUserNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(User? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<User?>(value),
+    );
+  }
+}
+
+String _$currentUserNotifierHash() =>
+    r'172baa72fdb482ed88ab6345f17eb9b1351af070';
+
+abstract class _$CurrentUserNotifier extends $Notifier<User?> {
+  User? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<User?, User?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<User?, User?>,
+              User?,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
