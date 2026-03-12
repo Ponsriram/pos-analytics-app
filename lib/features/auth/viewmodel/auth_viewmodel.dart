@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../core/models/user.dart';
 import '../../../core/providers/current_user_provider.dart';
 import '../repository/auth_repository.dart';
 
@@ -7,13 +11,17 @@ part 'auth_viewmodel.g.dart';
 @riverpod
 class AuthViewModel extends _$AuthViewModel {
   @override
-  AsyncValue<void>? build() => null;
+  AsyncValue<User>? build() => null;
 
-  Future<bool> login(
-      {required String email, required String password}) async {
+  /// Login with email and password.
+  Future<bool> login({required String email, required String password}) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(authRepositoryProvider);
-    final result = await repo.login(email: email, password: password);
+
+    final result = await ref
+        .read(authRepositoryProvider)
+        .login(email: email, password: password);
+
+    if (!ref.mounted) return false;
 
     return result.fold(
       (failure) {
@@ -21,13 +29,23 @@ class AuthViewModel extends _$AuthViewModel {
         return false;
       },
       (authResponse) {
-        ref.read(currentUserProvider.notifier).setUser(
-              authResponse.user,
-              authResponse.accessToken,
-            );
-        state = const AsyncValue.data(null);
+        final user = authResponse.user;
+
+        ref
+            .read(currentUserProvider.notifier)
+            .setUser(user, authResponse.accessToken);
+
+        log('AuthViewModel: user ${user.id} logged in');
+        state = AsyncValue.data(user);
         return true;
       },
     );
+  }
+
+  /// Logout.
+  Future<void> logout() async {
+    ref.read(currentUserProvider.notifier).logout();
+    log('AuthViewModel: user logged out');
+    state = null;
   }
 }
