@@ -23,17 +23,20 @@ class RunningOrdersRepository {
     required String storeId,
   }) async {
     try {
-      // Fetch orders with active statuses
+      // Fetch orders with active statuses in parallel to reduce waiting time.
       final statuses = ['sent_to_kitchen', 'preparing', 'ready'];
-      final allOrders = <Map<String, dynamic>>[];
+      final responses = await Future.wait(
+        statuses.map(
+          (status) => apiClient.getList(
+            ServerConstants.orders,
+            queryParams: {'store_id': storeId, 'status': status},
+          ),
+        ),
+      );
 
-      for (final status in statuses) {
-        final response = await apiClient.getList(
-          ServerConstants.orders,
-          queryParams: {'store_id': storeId, 'status': status},
-        );
-        allOrders.addAll(response.cast<Map<String, dynamic>>());
-      }
+      final allOrders = responses
+          .expand((response) => response.cast<Map<String, dynamic>>())
+          .toList();
 
       // Compute summary client-side
       final summary = _buildSummary(allOrders);
