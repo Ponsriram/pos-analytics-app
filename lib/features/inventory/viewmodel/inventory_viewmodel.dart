@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/selected_store_provider.dart';
 import '../model/inventory_item.dart';
@@ -12,19 +14,30 @@ class InventoryViewModel extends _$InventoryViewModel {
     final selectedStore = ref.watch(selectedStoreProvider);
     if (selectedStore != null) {
       _loadItems(selectedStore.id);
-    } else {
-      state = const AsyncValue.data([]);
+      return const AsyncValue.loading();
     }
-    return const AsyncValue.loading();
+
+    return const AsyncValue.data([]);
   }
 
   Future<void> _loadItems(String storeId) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(inventoryRepositoryProvider);
-    final result = await repo.getItems(storeId: storeId);
+
+    final result = await ref
+        .read(inventoryRepositoryProvider)
+        .getItems(storeId: storeId);
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (items) => AsyncValue.data(items),
+      (failure) {
+        log('InventoryViewModel: load items failed: ${failure.message}');
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (items) {
+        log('InventoryViewModel: loaded ${items.length} items');
+        return AsyncValue.data(items);
+      },
     );
   }
 
@@ -43,19 +56,30 @@ class OutOfStockViewModel extends _$OutOfStockViewModel {
     final selectedStore = ref.watch(selectedStoreProvider);
     if (selectedStore != null) {
       _loadOutOfStock(selectedStore.id);
-    } else {
-      state = const AsyncValue.data([]);
+      return const AsyncValue.loading();
     }
-    return const AsyncValue.loading();
+
+    return const AsyncValue.data([]);
   }
 
   Future<void> _loadOutOfStock(String storeId) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(inventoryRepositoryProvider);
-    final result = await repo.getOutOfStockItems(storeId: storeId);
+
+    final result = await ref
+        .read(inventoryRepositoryProvider)
+        .getOutOfStockItems(storeId: storeId);
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (items) => AsyncValue.data(items),
+      (failure) {
+        log('OutOfStockViewModel: load items failed: ${failure.message}');
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (items) {
+        log('OutOfStockViewModel: loaded ${items.length} items');
+        return AsyncValue.data(items);
+      },
     );
   }
 

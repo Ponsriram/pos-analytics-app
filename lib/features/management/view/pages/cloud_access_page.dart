@@ -26,7 +26,6 @@ class _CloudAccessPageState extends ConsumerState<CloudAccessPage> {
     return Scaffold(
       appBar: const CommonAppBar(
         title: 'Cloud Access',
-        showBack: true,
         showOutletPicker: false,
       ),
       body: ListView(

@@ -19,7 +19,6 @@ class BillerGroupsPage extends ConsumerWidget {
     return Scaffold(
       appBar: const CommonAppBar(
         title: 'Biller Groups',
-        showBack: true,
         showOutletPicker: false,
       ),
       floatingActionButton: FloatingActionButton.extended(

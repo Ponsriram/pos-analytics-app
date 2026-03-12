@@ -19,7 +19,6 @@ class AdminGroupsPage extends ConsumerWidget {
     return Scaffold(
       appBar: const CommonAppBar(
         title: 'Admin Groups',
-        showBack: true,
         showOutletPicker: false,
       ),
       floatingActionButton: FloatingActionButton.extended(

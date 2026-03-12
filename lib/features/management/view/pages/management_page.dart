@@ -17,11 +17,7 @@ class ManagementPage extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: const CommonAppBar(
-        title: 'Management',
-        showBack: true,
-        showOutletPicker: false,
-      ),
+      appBar: const CommonAppBar(title: 'Management', showOutletPicker: false),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
