@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/admin_group.dart';
 import '../repository/management_repository.dart';
@@ -14,11 +16,23 @@ class AdminGroupsViewModel extends _$AdminGroupsViewModel {
 
   Future<void> _loadGroups() async {
     state = const AsyncValue.loading();
-    final repo = ref.read(managementRepositoryProvider);
-    final result = await repo.getAdminGroups();
+    final result = await ref
+        .read(managementRepositoryProvider)
+        .getAdminGroups();
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (groups) => AsyncValue.data(groups),
+      (failure) {
+        log(
+          'AdminGroupsViewModel: failed to load admin groups - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (groups) {
+        log('AdminGroupsViewModel: loaded ${groups.length} admin group(s)');
+        return AsyncValue.data(groups);
+      },
     );
   }
 

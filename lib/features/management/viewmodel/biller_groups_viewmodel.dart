@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/biller_group.dart';
 import '../repository/management_repository.dart';
@@ -14,11 +16,23 @@ class BillerGroupsViewModel extends _$BillerGroupsViewModel {
 
   Future<void> _loadGroups() async {
     state = const AsyncValue.loading();
-    final repo = ref.read(managementRepositoryProvider);
-    final result = await repo.getBillerGroups();
+    final result = await ref
+        .read(managementRepositoryProvider)
+        .getBillerGroups();
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (groups) => AsyncValue.data(groups),
+      (failure) {
+        log(
+          'BillerGroupsViewModel: failed to load biller groups - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (groups) {
+        log('BillerGroupsViewModel: loaded ${groups.length} biller group(s)');
+        return AsyncValue.data(groups);
+      },
     );
   }
 

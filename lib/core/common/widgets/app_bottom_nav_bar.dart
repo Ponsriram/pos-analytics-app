@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../providers/bottom_nav_provider.dart';
 import '../../../features/dashboard/view/pages/dashboard_page.dart';
-import '../../../features/management/view/pages/management_page.dart';
 import '../../../features/reports/view/pages/reports_page.dart';
 import '../../../features/inventory/view/pages/inventory_page.dart';
 import '../../../features/more/view/pages/more_page.dart';
+import '../../../features/stores/view/pages/stores_page.dart';
 
 class AppBottomNavBar extends ConsumerStatefulWidget {
   const AppBottomNavBar({super.key});
@@ -17,7 +17,7 @@ class AppBottomNavBar extends ConsumerStatefulWidget {
 
 class _AppBottomNavBarState extends ConsumerState<AppBottomNavBar> {
   static const _pages = <Widget>[
-    ManagementPage(),
+    StoresPage(),
     ReportsPage(),
     DashboardPage(),
     InventoryPage(),
@@ -60,9 +60,9 @@ class _AppBottomNavBarState extends ConsumerState<AppBottomNavBar> {
           unselectedFontSize: 12,
           items: [
             BottomNavigationBarItem(
-              icon: _buildNavIcon(Iconsax.setting_2, 0),
-              activeIcon: _buildActiveNavIcon(Iconsax.setting_2, 0),
-              label: 'Management',
+              icon: _buildNavIcon(Iconsax.shop, 0),
+              activeIcon: _buildActiveNavIcon(Iconsax.shop, 0),
+              label: 'Stores',
             ),
             BottomNavigationBarItem(
               icon: _buildNavIcon(Iconsax.document_text, 1),
