@@ -41,7 +41,7 @@ final class UserInfoViewModelProvider
   }
 }
 
-String _$userInfoViewModelHash() => r'4b9538c4c8b8d4b72c8854604c1ab33eefa2e84b';
+String _$userInfoViewModelHash() => r'1e28ed2ba77705c88174f497f5ffb31a825f0bd0';
 
 abstract class _$UserInfoViewModel extends $Notifier<UserInfoState> {
   UserInfoState build();
