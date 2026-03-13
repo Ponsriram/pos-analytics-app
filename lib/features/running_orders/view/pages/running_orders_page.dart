@@ -21,7 +21,6 @@ class RunningOrdersPage extends ConsumerWidget {
     return Scaffold(
       appBar: const CommonAppBar(
         title: 'Running Orders',
-        showBack: true,
         showOutletPicker: false,
       ),
       body: summaryState.when(

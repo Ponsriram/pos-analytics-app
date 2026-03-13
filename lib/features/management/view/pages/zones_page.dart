@@ -20,7 +20,7 @@ class ZonesPage extends ConsumerWidget {
     return Scaffold(
       appBar: const CommonAppBar(
         title: 'Delivery Zones',
-        showBack: true,
+        
         showOutletPicker: false,
       ),
       floatingActionButton: FloatingActionButton.extended(

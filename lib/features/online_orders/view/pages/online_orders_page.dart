@@ -21,7 +21,6 @@ class OnlineOrdersPage extends ConsumerWidget {
     return Scaffold(
       appBar: const CommonAppBar(
         title: 'Online Orders Activity',
-        showBack: true,
         showOutletPicker: false,
       ),
       body: Column(

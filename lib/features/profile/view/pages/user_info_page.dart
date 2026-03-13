@@ -39,7 +39,6 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'User Info',
-        showBack: true,
         showOutletPicker: false,
         extraActions: [
           OutlinedButton(

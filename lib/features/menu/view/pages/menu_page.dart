@@ -21,7 +21,6 @@ class MenuPage extends ConsumerWidget {
     return Scaffold(
       appBar: const CommonAppBar(
         title: 'Menu & Products',
-        showBack: true,
         showOutletPicker: false,
       ),
       body: Column(

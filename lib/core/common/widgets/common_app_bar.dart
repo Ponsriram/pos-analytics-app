@@ -10,14 +10,12 @@ import 'outlet_picker_dialog.dart';
 class CommonAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String? title;
   final bool showOutletPicker;
-  final bool showBack;
   final List<Widget>? extraActions;
 
   const CommonAppBar({
     super.key,
     this.title,
     this.showOutletPicker = true,
-    this.showBack = false,
     this.extraActions,
   });
 
@@ -33,12 +31,6 @@ class CommonAppBar extends ConsumerWidget implements PreferredSizeWidget {
       backgroundColor: colorScheme.surface,
       elevation: 0,
       scrolledUnderElevation: 0,
-      leading: showBack
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
-            )
-          : null,
       title: showOutletPicker
           ? InkWell(
               onTap: () => _showOutletPicker(context, ref),

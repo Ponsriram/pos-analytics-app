@@ -33,7 +33,9 @@ dependencies:
   get_it: ^8.0.3
 
   # Local Storage
-  shared_preferences: ^2.5.4
+  drift: ^2.31.0
+  drift_flutter: ^0.2.8
+  path_provider: ^2.1.5
 
   # Utilities
   intl: ^0.20.0
@@ -50,6 +52,7 @@ dev_dependencies:
   json_serializable: ^6.11.1
   freezed: ^3.2.3
   riverpod_lint: ^3.0.0
+  drift_dev: ^2.31.0
 
 flutter:
   uses-material-design: true

@@ -220,7 +220,7 @@ return $default(_that.accessToken,_that.tokenType,_that.user);case _:
 @JsonSerializable()
 
 class _AuthResponse implements AuthResponse {
-  const _AuthResponse({@JsonKey(name: 'access_token') required this.accessToken, @JsonKey(name: 'token_type') required this.tokenType, required this.user});
+  const _AuthResponse({@JsonKey(name: 'access_token') required this.accessToken, @JsonKey(name: 'token_type') this.tokenType = 'bearer', required this.user});
   factory _AuthResponse.fromJson(Map<String, dynamic> json) => _$AuthResponseFromJson(json);
 
 @override@JsonKey(name: 'access_token') final  String accessToken;

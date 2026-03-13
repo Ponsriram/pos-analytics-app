@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/selected_store_provider.dart';
 import '../model/running_order.dart';
@@ -16,19 +18,32 @@ class RunningOrdersViewModel extends _$RunningOrdersViewModel {
     final selectedStore = ref.watch(selectedStoreProvider);
     if (selectedStore != null) {
       _loadRunningOrders(selectedStore.id);
-    } else {
-      state = const AsyncValue.data(RunningOrdersSummary());
+      return const AsyncValue.loading();
     }
-    return const AsyncValue.loading();
+
+    return const AsyncValue.data(RunningOrdersSummary());
   }
 
   Future<void> _loadRunningOrders(String storeId) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(runningOrdersRepositoryProvider);
-    final result = await repo.getRunningOrders(storeId: storeId);
+
+    final result = await ref
+        .read(runningOrdersRepositoryProvider)
+        .getRunningOrders(storeId: storeId);
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (summary) => AsyncValue.data(summary),
+      (failure) {
+        log('RunningOrdersViewModel: load failed: ${failure.message}');
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (summary) {
+        log(
+          'RunningOrdersViewModel: loaded ${summary.totalOrderCount} orders, ${summary.totalTableCount} tables',
+        );
+        return AsyncValue.data(summary);
+      },
     );
   }
 

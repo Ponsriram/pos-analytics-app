@@ -1,56 +1,59 @@
+import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../init_dependencies.dart';
-import '../models/user.dart';
+import '../database/app_database.dart';
+import '../models/user.dart' as model;
 
 part 'current_user_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class CurrentUserNotifier extends _$CurrentUserNotifier {
   @override
-  User? build() {
+  model.User? build() {
     _loadFromStorage();
     return null;
   }
 
-  void _loadFromStorage() {
-    final prefs = serviceLocator<SharedPreferences>();
-    final token = prefs.getString('auth_token');
-    final userId = prefs.getString('user_id');
-    final userName = prefs.getString('user_name');
-    final userEmail = prefs.getString('user_email');
-    final userRole = prefs.getString('user_role');
+  Future<void> _loadFromStorage() async {
+    final db = serviceLocator<AppDatabase>();
+    final dbUser = await db.getLoggedInUser();
 
-    if (token != null &&
-        userId != null &&
-        userName != null &&
-        userEmail != null) {
-      state = User(
-        id: userId,
-        name: userName,
-        email: userEmail,
-        role: userRole ?? 'owner',
+    if (dbUser != null) {
+      state = model.User(
+        id: dbUser.id,
+        name: dbUser.name,
+        email: dbUser.email,
+        phone: dbUser.phone,
+        role: dbUser.role,
+        isActive: dbUser.isActive,
+        createdAt: dbUser.createdAt,
       );
     }
   }
 
-  void setUser(User user, String token) {
-    final prefs = serviceLocator<SharedPreferences>();
-    prefs.setString('auth_token', token);
-    prefs.setString('user_id', user.id);
-    prefs.setString('user_name', user.name);
-    prefs.setString('user_email', user.email);
-    prefs.setString('user_role', user.role);
+  Future<void> setUser(model.User user, String token) async {
+    final db = serviceLocator<AppDatabase>();
+    await db.insertUser(
+      UsersCompanion(
+        id: Value(user.id),
+        name: Value(user.name),
+        email: Value(user.email),
+        phone: Value(user.phone),
+        token: Value(token),
+        role: Value(user.role),
+        isLoggedIn: const Value(true),
+        isActive: Value(user.isActive),
+      ),
+    );
     state = user;
   }
 
-  void logout() {
-    final prefs = serviceLocator<SharedPreferences>();
-    prefs.remove('auth_token');
-    prefs.remove('user_id');
-    prefs.remove('user_name');
-    prefs.remove('user_email');
-    prefs.remove('user_role');
+  Future<void> logout() async {
+    final db = serviceLocator<AppDatabase>();
+    final dbUser = await db.getLoggedInUser();
+    if (dbUser != null) {
+      await db.logoutUser(dbUser.id);
+    }
     state = null;
   }
 }
