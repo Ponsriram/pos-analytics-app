@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/selected_store_provider.dart';
 import '../model/menu_item_model.dart';
@@ -32,6 +34,8 @@ class MenuViewModel extends _$MenuViewModel {
 
     // Load categories
     final catResult = await repo.getCategories(storeId: storeId);
+    if (!ref.mounted) return;
+
     catResult.fold((_) {}, (cats) => _categories = ['All', ...cats]);
 
     // Load items
@@ -39,9 +43,23 @@ class MenuViewModel extends _$MenuViewModel {
       storeId: storeId,
       categoryId: _selectedCategory,
     );
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (items) => AsyncValue.data(_applySearch(items)),
+      (failure) {
+        log(
+          'MenuViewModel: failed to load menu for store $storeId - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (items) {
+        final filteredItems = _applySearch(items);
+        log(
+          'MenuViewModel: loaded ${filteredItems.length} menu item(s) for store $storeId',
+        );
+        return AsyncValue.data(filteredItems);
+      },
     );
   }
 

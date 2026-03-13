@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/delivery_zone.dart';
 import '../repository/management_repository.dart';
@@ -14,11 +16,21 @@ class ZonesViewModel extends _$ZonesViewModel {
 
   Future<void> _loadZones() async {
     state = const AsyncValue.loading();
-    final repo = ref.read(managementRepositoryProvider);
-    final result = await repo.getDeliveryZones();
+    final result = await ref
+        .read(managementRepositoryProvider)
+        .getDeliveryZones();
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (zones) => AsyncValue.data(zones),
+      (failure) {
+        log('ZonesViewModel: failed to load zones - ${failure.message}');
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (zones) {
+        log('ZonesViewModel: loaded ${zones.length} zone(s)');
+        return AsyncValue.data(zones);
+      },
     );
   }
 
