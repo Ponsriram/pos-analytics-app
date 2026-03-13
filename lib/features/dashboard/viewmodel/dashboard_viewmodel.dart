@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/selected_store_provider.dart';
@@ -47,9 +49,20 @@ class DashboardViewModel extends _$DashboardViewModel {
 
     if (storeId != null) {
       final result = await repo.getSummary(storeId: storeId, dateStr: dateStr);
+
+      if (!ref.mounted) return;
+
       state = result.fold(
-        (failure) => AsyncValue.error(failure.message, StackTrace.current),
-        (stats) => AsyncValue.data(stats),
+        (failure) {
+          log(
+            'DashboardViewModel: failed to load dashboard for store $storeId - ${failure.message}',
+          );
+          return AsyncValue.error(failure.message, StackTrace.current);
+        },
+        (stats) {
+          log('DashboardViewModel: dashboard loaded for store $storeId');
+          return AsyncValue.data(stats);
+        },
       );
     } else {
       if (storeNames.isEmpty) {
@@ -60,9 +73,22 @@ class DashboardViewModel extends _$DashboardViewModel {
         dateStr: dateStr,
         storeNames: storeNames,
       );
+
+      if (!ref.mounted) return;
+
       state = result.fold(
-        (failure) => AsyncValue.error(failure.message, StackTrace.current),
-        (response) => AsyncValue.data(response.totals),
+        (failure) {
+          log(
+            'DashboardViewModel: failed to load all-store dashboard - ${failure.message}',
+          );
+          return AsyncValue.error(failure.message, StackTrace.current);
+        },
+        (response) {
+          log(
+            'DashboardViewModel: all-store dashboard loaded for ${response.outlets.length} outlet(s)',
+          );
+          return AsyncValue.data(response.totals);
+        },
       );
     }
   }
@@ -107,9 +133,22 @@ class OutletStatsViewModel extends _$OutletStatsViewModel {
       dateStr: dateStr,
       storeNames: storeNames,
     );
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (response) => AsyncValue.data(response.outlets),
+      (failure) {
+        log(
+          'OutletStatsViewModel: failed to load outlet stats - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (response) {
+        log(
+          'OutletStatsViewModel: loaded outlet stats for ${response.outlets.length} outlet(s)',
+        );
+        return AsyncValue.data(response.outlets);
+      },
     );
   }
 

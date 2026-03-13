@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/selected_store_provider.dart';
 import '../model/shift.dart';
@@ -32,14 +34,25 @@ class ShiftsViewModel extends _$ShiftsViewModel {
 
   Future<void> _loadShifts(String storeId) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(shiftRepositoryProvider);
-    final result = await repo.getShifts(
-      storeId: storeId,
-      status: _statusFilter,
-    );
+    final result = await ref
+        .read(shiftRepositoryProvider)
+        .getShifts(storeId: storeId, status: _statusFilter);
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (shifts) => AsyncValue.data(shifts),
+      (failure) {
+        log(
+          'ShiftsViewModel: failed to load shifts for store $storeId - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (shifts) {
+        log(
+          'ShiftsViewModel: loaded ${shifts.length} shift(s) for store $storeId',
+        );
+        return AsyncValue.data(shifts);
+      },
     );
   }
 

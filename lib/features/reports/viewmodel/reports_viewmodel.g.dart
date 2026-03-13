@@ -44,7 +44,7 @@ final class ReportsViewModelProvider
   }
 }
 
-String _$reportsViewModelHash() => r'c287ed1fc947c195c76a9bcbc58dbe1516107350';
+String _$reportsViewModelHash() => r'5252701a8ee4609a5ee4ac66a50ce64db996b59d';
 
 abstract class _$ReportsViewModel
     extends $Notifier<AsyncValue<List<DayCloseReport>>> {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/cloud_access_config.dart';
 import '../repository/management_repository.dart';
@@ -14,20 +16,45 @@ class CloudAccessViewModel extends _$CloudAccessViewModel {
 
   Future<void> _loadConfig() async {
     state = const AsyncValue.loading();
-    final repo = ref.read(managementRepositoryProvider);
-    final result = await repo.getCloudAccessConfig();
+    final result = await ref
+        .read(managementRepositoryProvider)
+        .getCloudAccessConfig();
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (config) => AsyncValue.data(config),
+      (failure) {
+        log(
+          'CloudAccessViewModel: failed to load cloud access config - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (config) {
+        log('CloudAccessViewModel: cloud access config loaded');
+        return AsyncValue.data(config);
+      },
     );
   }
 
   Future<void> updateConfig(CloudAccessConfig config) async {
-    final repo = ref.read(managementRepositoryProvider);
-    final result = await repo.updateCloudAccessConfig(config);
+    state = const AsyncValue.loading();
+    final result = await ref
+        .read(managementRepositoryProvider)
+        .updateCloudAccessConfig(config);
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (config) => AsyncValue.data(config),
+      (failure) {
+        log(
+          'CloudAccessViewModel: failed to update cloud access config - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (updatedConfig) {
+        log('CloudAccessViewModel: cloud access config updated');
+        return AsyncValue.data(updatedConfig);
+      },
     );
   }
 

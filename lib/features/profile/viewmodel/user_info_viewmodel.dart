@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/current_user_provider.dart';
 import '../model/user_info_model.dart';
+import '../repository/user_info_repository.dart';
 
 part 'user_info_viewmodel.g.dart';
 
@@ -40,66 +43,52 @@ class UserInfoState {
 class UserInfoViewModel extends _$UserInfoViewModel {
   @override
   UserInfoState build() {
-    _loadUserInfo();
+    Future.microtask(_loadUserInfo);
     return const UserInfoState(isLoading: true);
   }
 
   Future<void> _loadUserInfo() async {
-    state = state.copyWith(isLoading: true);
-    final currentUser = ref.read(currentUserProvider);
-    if (currentUser != null) {
-      final now = DateTime.now();
-      state = state.copyWith(
-        isLoading: false,
-        userInfo: UserInfoModel(
-          id: currentUser.id,
-          name: currentUser.name,
-          email: currentUser.email,
-          isEmailVerified: true,
-          mobileNumbers: const [
-            MobileNumber(
-              id: 'mob_1',
-              countryCode: '+91',
-              number: '9876543210',
-              isVerified: true,
+    state = state.copyWith(isLoading: true, error: null);
+
+    final result = await ref.read(userInfoRepositoryProvider).getUserInfo();
+    if (!ref.mounted) return;
+
+    result.fold(
+      (failure) {
+        log('UserInfoViewModel: failed to load user info - ${failure.message}');
+        state = state.copyWith(isLoading: false, error: failure.message);
+      },
+      (userInfo) {
+        final currentUser = ref.read(currentUserProvider);
+        final now = DateTime.now();
+
+        state = state.copyWith(
+          isLoading: false,
+          userInfo: userInfo,
+          logs: [
+            UserLogEntry(
+              id: '1',
+              changes: 'User logged in',
+              doneByName: currentUser?.name ?? userInfo.name,
+              doneByEmail: currentUser?.email ?? userInfo.email,
+              browser: 'Flutter App',
+              ipAddress: '192.168.1.100',
+              timestamp: now,
+            ),
+            UserLogEntry(
+              id: '2',
+              changes: 'Profile loaded from server',
+              doneByName: currentUser?.name ?? userInfo.name,
+              doneByEmail: currentUser?.email ?? userInfo.email,
+              browser: 'Flutter App',
+              ipAddress: '192.168.1.100',
+              timestamp: now.subtract(const Duration(minutes: 2)),
             ),
           ],
-          createdAt: now.subtract(const Duration(days: 90)),
-          createdBy: 'System',
-        ),
-        logs: [
-          UserLogEntry(
-            id: '1',
-            changes: 'User logged in',
-            doneByName: currentUser.name,
-            doneByEmail: currentUser.email,
-            browser: 'Flutter App',
-            ipAddress: '192.168.1.100',
-            timestamp: now,
-          ),
-          UserLogEntry(
-            id: '2',
-            changes: 'Profile updated',
-            doneByName: currentUser.name,
-            doneByEmail: currentUser.email,
-            browser: 'Flutter App',
-            ipAddress: '192.168.1.100',
-            timestamp: now.subtract(const Duration(hours: 2)),
-          ),
-          UserLogEntry(
-            id: '3',
-            changes: '2FA enabled',
-            doneByName: currentUser.name,
-            doneByEmail: currentUser.email,
-            browser: 'Flutter App',
-            ipAddress: '192.168.1.101',
-            timestamp: now.subtract(const Duration(days: 1)),
-          ),
-        ],
-      );
-    } else {
-      state = state.copyWith(isLoading: false, error: 'User not found');
-    }
+        );
+        log('UserInfoViewModel: user info loaded for ${userInfo.id}');
+      },
+    );
   }
 
   void toggle2FA(bool value) {
@@ -118,6 +107,8 @@ class UserInfoViewModel extends _$UserInfoViewModel {
     state = state.copyWith(isSaving: true);
     // Simulate API call
     await Future.delayed(const Duration(milliseconds: 500));
+    if (!ref.mounted) return;
+
     if (state.userInfo != null) {
       state = state.copyWith(
         isSaving: false,
@@ -127,6 +118,10 @@ class UserInfoViewModel extends _$UserInfoViewModel {
           mobileNumbers: mobileNumbers,
         ),
       );
+      log('UserInfoViewModel: user profile updated');
+    } else {
+      state = state.copyWith(isSaving: false, error: 'User not found');
+      log('UserInfoViewModel: failed to update profile - user not found');
     }
   }
 
@@ -156,7 +151,10 @@ class UserInfoViewModel extends _$UserInfoViewModel {
   }) async {
     state = state.copyWith(isSaving: true);
     await Future.delayed(const Duration(milliseconds: 500));
+    if (!ref.mounted) return;
+
     state = state.copyWith(isSaving: false);
+    log('UserInfoViewModel: password changed');
   }
 
   void clearError() {

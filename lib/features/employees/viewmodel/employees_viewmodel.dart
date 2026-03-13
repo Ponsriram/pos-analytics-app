@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/selected_store_provider.dart';
 import '../model/employee.dart';
@@ -30,18 +32,31 @@ class EmployeesViewModel extends _$EmployeesViewModel {
 
   Future<void> _loadEmployees(String storeId) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(employeeRepositoryProvider);
-    final result = await repo.getEmployees(storeId: storeId);
+    final result = await ref
+        .read(employeeRepositoryProvider)
+        .getEmployees(storeId: storeId);
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
+      (failure) {
+        log(
+          'EmployeesViewModel: failed to load employees for store $storeId - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
       (employees) {
         if (_searchQuery.isEmpty) return AsyncValue.data(employees);
         final query = _searchQuery.toLowerCase();
-        return AsyncValue.data(employees.where((e) {
+        final filtered = employees.where((e) {
           return e.name.toLowerCase().contains(query) ||
               e.role.toLowerCase().contains(query) ||
               (e.phone?.contains(query) ?? false);
-        }).toList());
+        }).toList();
+        log(
+          'EmployeesViewModel: loaded ${filtered.length} employee(s) for store $storeId',
+        );
+        return AsyncValue.data(filtered);
       },
     );
   }

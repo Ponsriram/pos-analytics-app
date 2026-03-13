@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../../../core/common/widgets/common_app_bar.dart';
-import '../../../stores/view/pages/stores_page.dart';
 import 'admin_groups_page.dart';
 import 'biller_groups_page.dart';
 import 'cloud_access_page.dart';
@@ -29,16 +28,6 @@ class ManagementPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          _ManagementTile(
-            icon: Iconsax.shop,
-            title: 'Stores',
-            subtitle: 'Manage your store outlets',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const StoresPage()),
-            ),
-            colorScheme: colorScheme,
-          ),
           _ManagementTile(
             icon: Iconsax.people,
             title: 'Admin Groups',
