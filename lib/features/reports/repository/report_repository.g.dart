@@ -53,4 +53,4 @@ final class ReportRepositoryProvider
   }
 }
 
-String _$reportRepositoryHash() => r'301a407a7c538581334e85af8df584072b62d2dd';
+String _$reportRepositoryHash() => r'f1d5ab4ed0f8c3f2ef70bf722ffaf9d74b94229a';

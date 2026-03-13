@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/providers/selected_store_provider.dart';
@@ -18,11 +20,11 @@ class ReportsViewModel extends _$ReportsViewModel {
   AsyncValue<List<DayCloseReport>> build() {
     final selectedStore = ref.watch(selectedStoreProvider);
     if (selectedStore != null) {
-      _loadReports(selectedStore.id);
-    } else {
-      state = const AsyncValue.data([]);
+      Future.microtask(() => _loadReports(selectedStore.id));
+      return const AsyncValue.loading();
     }
-    return const AsyncValue.loading();
+
+    return const AsyncValue.data([]);
   }
 
   void setDateRange(DateTime start, DateTime end) {
@@ -36,15 +38,29 @@ class ReportsViewModel extends _$ReportsViewModel {
 
   Future<void> _loadReports(String storeId) async {
     state = const AsyncValue.loading();
-    final repo = ref.read(reportRepositoryProvider);
-    final result = await repo.getDayCloseReports(
-      storeId: storeId,
-      startDate: DateFormat('yyyy-MM-dd').format(_startDate),
-      endDate: DateFormat('yyyy-MM-dd').format(_endDate),
-    );
+    final result = await ref
+        .read(reportRepositoryProvider)
+        .getDayCloseReports(
+          storeId: storeId,
+          startDate: DateFormat('yyyy-MM-dd').format(_startDate),
+          endDate: DateFormat('yyyy-MM-dd').format(_endDate),
+        );
+
+    if (!ref.mounted) return;
+
     state = result.fold(
-      (failure) => AsyncValue.error(failure.message, StackTrace.current),
-      (reports) => AsyncValue.data(reports),
+      (failure) {
+        log(
+          'ReportsViewModel: failed to load reports for store $storeId - ${failure.message}',
+        );
+        return AsyncValue.error(failure.message, StackTrace.current);
+      },
+      (reports) {
+        log(
+          'ReportsViewModel: loaded ${reports.length} report(s) for store $storeId',
+        );
+        return AsyncValue.data(reports);
+      },
     );
   }
 
